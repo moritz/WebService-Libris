@@ -66,7 +66,6 @@ sub new {
     my ($class, %opts) = @_;;
     my $c;
     if ($opts{type}) {
-        warn "Type: '$opts{type}'";
         if ($opts{type_map}) {
             $c = $opts{type_map}{lc $opts{type}}
                 // $default_typemap{lc $opts{type}};
