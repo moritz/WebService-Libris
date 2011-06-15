@@ -12,5 +12,8 @@ sub title { shift->dom->at('title' )->text }
 sub isbn  { shift->dom->at('isbn10')->text }
 sub date  { shift->dom->at('date'  )->text }
 
+sub related_books { shift->collection_from_dom('frbr_related') }
+sub held_by       { shift->collection_from_dom('held_by')      }
+
 
 1;

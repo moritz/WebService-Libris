@@ -1,6 +1,7 @@
 package WebService::Libris;
 use Mojo::Base -base;
 use Mojo::UserAgent;
+use WebService::Libris::Collection;
 
 use 5.010;
 use strict;
@@ -111,6 +112,33 @@ sub dom {
 
 sub fragments {
     die "Must be overridden in subclasses";
+}
+
+sub collection_from_dom {
+    my ($self, $search_for) = @_;
+    my $key;
+    my @ids;
+    $self->dom->find($search_for)->each(sub {
+        my ($d, $idx) = @_;
+        my $resource_url = $d->attrs->{'rdf:resource'};
+        return unless $resource_url;
+        my ($k, $id) = $self->fragment_from_resource_url($resource_url);
+        if ($idx == 1) {
+            $key = $k;
+        } elsif ($k ne $k) {
+            die "Resource links differ in type ($key vs. $k), can't handle that yet";
+        }
+        push @ids, $id;
+    });
+    WebService::Libris::Collection->new(
+        type    => $key,
+        ids     => \@ids,
+    );
+}
+
+sub fragment_from_resource_url {
+    my ($self, $url) = @_;
+    (split '/', $url)[-2, -1];
 }
 
 =head1 AUTHOR
