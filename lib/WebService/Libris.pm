@@ -118,8 +118,9 @@ sub collection_from_dom {
     my ($self, $search_for) = @_;
     my $key;
     my @ids;
+    my $idx = 1;
     $self->dom->find($search_for)->each(sub {
-        my ($d, $idx) = @_;
+        my $d = shift;
         my $resource_url = $d->attrs->{'rdf:resource'};
         return unless $resource_url;
         my ($k, $id) = $self->fragment_from_resource_url($resource_url);
@@ -129,6 +130,7 @@ sub collection_from_dom {
             die "Resource links differ in type ($key vs. $k), can't handle that yet";
         }
         push @ids, $id;
+        $idx++;
     });
     WebService::Libris::Collection->new(
         type    => $key,
@@ -139,6 +141,24 @@ sub collection_from_dom {
 sub fragment_from_resource_url {
     my ($self, $url) = @_;
     (split '/', $url)[-2, -1];
+}
+
+sub _make_text_accessor {
+    my $package = shift;
+    for (@_) {
+        my ($name, $look_for);
+        if (ref($_) eq 'ARRAY') {
+            ($name, $look_for) = @$_;
+        } else {
+            $name     = $_;
+            $look_for = $_;
+        }
+        no strict 'refs';
+        *{"${package}::$name"} = sub {
+            my $thing;
+            ($thing = shift->dom->at($look_for)) && $thing->text;
+        };
+    }
 }
 
 =head1 AUTHOR
