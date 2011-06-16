@@ -17,6 +17,16 @@ sub all {
         @{ $self->ids };
 }
 
+sub first {
+    my $self = shift;
+    return unless @{ $self->ids };
+    WebService::Libris->new(
+        type => $self->type,
+        id   => $self->ids->[0],
+    );
+
+}
+
 sub next {
     my $self = shift;
     if (@{ $self->ids }) {
