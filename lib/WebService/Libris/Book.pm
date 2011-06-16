@@ -1,5 +1,6 @@
 package WebService::Libris::Book;
 use Mojo::Base 'WebService::Libris';
+use WebService::Libris::Utils qw/marc_lang_code_to_iso/;
 use strict;
 use warnings;
 use 5.010;
@@ -23,6 +24,18 @@ sub authors_text  {
         return $authors[0]
     } else {
         return join ", ", @authors;
+    }
+}
+
+sub language {
+    my $self = shift;
+    my $l = $self->dom->at('language');
+    return unless $l;
+    $l = $l->attrs->{'rdf:resource'};
+    if ($l =~ m{http://purl.org/NET/marccodes/languages/(\w{3})(?:\#lang)?}) {
+        return marc_lang_code_to_iso($1);
+    } else {
+        return;
     }
 }
 
