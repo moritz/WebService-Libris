@@ -33,4 +33,8 @@ sub same_as {
     return;
 }
 
+sub names {
+    map $_->text, shift->_description->find('name')->each;
+}
+
 1;
