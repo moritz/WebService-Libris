@@ -1,6 +1,7 @@
 package WebService::Libris;
 use Mojo::Base -base;
 use Mojo::UserAgent;
+use Mojo::URL;
 use WebService::Libris::Collection;
 
 use 5.010;
@@ -37,6 +38,8 @@ our $VERSION = '0.01';
 =head1 SYNOPSIS
 
     use WebService::Libris;
+    use 5.010;
+    binmode STDOUT, ':encoding(UTF-8)';
 
     my $book = WebService::Libris->new(
         type => 'book',
@@ -44,6 +47,16 @@ our $VERSION = '0.01';
         id   => '9604288',
     );
     print $book->title;
+
+    my $books = WebService::Libris->search(
+        term    => 'Astrid Lindgren',
+        page    => 1,
+    );
+    while (my $b = $books->next) {
+        say $b->title;
+        say '  isbn: ', $b->isbn;
+        say '  date: ', $b->date;
+    }
 
 =head1 DESCRIPTION
 
@@ -108,6 +121,34 @@ sub dom {
     # TODO: add caching options
     $self->_dom(Mojo::UserAgent->new()->get($self->rdf_url)->res->dom) unless $self->_dom;
     $self->_dom;
+}
+
+sub direct_search {
+    my ($self, %opts) = @_;
+    my $terms = $opts{term} // die "Search term missing";
+    my $page  = $opts{page} // 1;
+    my %q = (
+        query   => $terms,
+        n       => 200,     # max. number of results
+        start   => 1 + 200 * ($page - 1),
+        format  => 'json',
+    );
+    $q{format_level} = 'full' if $opts{full};
+    my $url = Mojo::URL->new('http://libris.kb.se/xsearch');
+    $url->query(%q);
+    my $res = Mojo::UserAgent->new()->get($url)->res;
+    $res->json;
+}
+
+sub search {
+    my ($self, %opts) = @_;
+    my $json = $self->direct_search(%opts);
+    my @ids = map { (split '/',  $_->{identifier})[-1] }
+                  @{ $json->{xsearch}{list} };
+    WebService::Libris::Collection->new(
+        type    => 'bib',
+        ids     => \@ids,
+    );
 }
 
 sub search_for_isbn {
