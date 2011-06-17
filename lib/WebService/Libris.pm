@@ -91,6 +91,109 @@ The C<id> argument is mandatory, and must contain the Libris ID of the object
 you want to retrieve. If you don't know the Libris ID, use one of the
 C<search> functions instead.
 
+=head2 direct_search
+
+    my $hashref = WebService::Libris->direct_search(
+        term    => 'Your Searchterms Here',
+        page    => 1,   # page size is 200
+        full    => 1,   # return all available information
+    );
+
+Returns a hashref directly from the JSON response of the xsearch API
+described at L<http://librishelp.libris.kb.se/help/xsearch_eng.jsp?open=tech>.
+
+This is more efficient than a C<< WebService::Libris->search >> call, because
+it does only one query (whereas C<< ->search >> does one additional request
+per result object), but it's not as convenient, and does not allow browsing of
+related entities (such as authors and libraries).
+
+=head2 search
+
+    my $collection = WebService::Libris->search(
+        term    => 'Your Search Term Here',
+        page    => 1,
+    );
+    while (my $book = $collection->next) {
+        say $book->title;
+    }
+
+Searches the xsearch API for arbitrary search terms, and returns a
+C<WebService::Libris::Collection> of books.
+
+See the C<direct_search> method above for a short discussion.
+
+=head2 search_for_isbn
+
+    my $book = WebService::ISBN->search_for_isbn('9170370192');
+
+Looks up a book by ISBN
+
+
+=head2 rdf_url
+
+Returns the RDF resource URL for the current object. Mostly useful for internal purposes.
+
+=head2 dom
+
+Returns the L<Mojo::DOM> object from the web services response.
+Does a request to the web service if no DOM was stored previously.
+
+Only useful for you if you want to extract more data from a response
+than the object itself provides.
+
+=head1 AUTHOR
+
+Moritz Lenz, C<< <moritz at faui2k3.org> >>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-webservice-libris at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-Libris>.  I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
+
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc WebService::Libris
+
+
+You can also look for information at:
+
+=over 4
+
+=item * Bug tracker:
+
+L<https://github.com/moritz/WebService-Libris/issues>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/WebService-Libris>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/WebService-Libris>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/WebService-Libris/>
+
+=back
+
+
+=head1 ACKNOWLEDGEMENTS
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Moritz Lenz.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See L<http://dev.perl.org/licenses/> for more information.
+
 =cut
 
 sub new {
@@ -113,27 +216,12 @@ sub new {
     }
 }
 
-=head2 rdf_url
-
-Returns the RDF resource URL for the current object. Mostly useful for internal purposes.
-
-=cut
 
 sub rdf_url {
     my $self = shift;
     my ($key, $id) = $self->fragments;
     "http://libris.kb.se/data/$key/$id?format=application%2Frdf%2Bxml";
 }
-
-=head2 dom
-
-Returns the L<Mojo::DOM> object from the web services response.
-Does a request to the web service if no DOM was stored previously.
-
-Only useful for you if you want to extract more data from a response
-than the object itself provides.
-
-=cut
 
 sub dom {
     my $self = shift;
@@ -142,26 +230,6 @@ sub dom {
     $self->_dom(Mojo::UserAgent->new()->get($self->rdf_url)->res->dom) unless $self->_dom;
     $self->_dom;
 }
-
-
-=head2 direct_search
-
-    my $hashref = WebService::Libris->direct_search(
-        term    => 'Your Searchterms Here',
-        page    => 1,   # page size is 200
-        full    => 1,   # return all available information
-    );
-
-Returns a hashref directly from the JSON response of the xsearch API
-described at L<http://librishelp.libris.kb.se/help/xsearch_eng.jsp?open=tech>.
-
-This is more efficient than a C<< WebService::Libris->search >> call, because
-it does only one query (whereas C<< ->search >> does one additional request
-per result object), but it's not as convenient, and does not allow browsing of
-related entities (such as authors and libraries).
-
-=cut
-
 
 sub direct_search {
     my ($self, %opts) = @_;
@@ -180,23 +248,6 @@ sub direct_search {
     $res->json;
 }
 
-=head2 search
-
-    my $collection = WebService::Libris->search(
-        term    => 'Your Search Term Here',
-        page    => 1,
-    );
-    while (my $book = $collection->next) {
-        say $book->title;
-    }
-
-Searches the xsearch API for arbitrary search terms, and returns a
-C<WebService::Libris::Collection> of books.
-
-See the C<direct_search> method above for a short discussion.
-
-=cut
-
 sub search {
     my ($self, %opts) = @_;
     my $json = $self->direct_search(%opts);
@@ -207,14 +258,6 @@ sub search {
         ids     => \@ids,
     );
 }
-
-=head2 search_for_isbn
-
-    my $book = WebService::ISBN->search_for_isbn('9170370192');
-
-Looks up a book by ISBN
-
-=cut
 
 sub search_for_isbn {
     my ($self, $isbn) = @_;
@@ -276,60 +319,5 @@ sub _make_text_accessor {
     }
 }
 
-=head1 AUTHOR
-
-Moritz Lenz, C<< <moritz at faui2k3.org> >>
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-webservice-libris at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-Libris>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc WebService::Libris
-
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker (report bugs here)
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=WebService-Libris>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/WebService-Libris>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/WebService-Libris>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/WebService-Libris/>
-
-=back
-
-
-=head1 ACKNOWLEDGEMENTS
-
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2011 Moritz Lenz.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
-
-See L<http://dev.perl.org/licenses/> for more information.
-
-=cut
 
 1; # End of WebService::Libris
