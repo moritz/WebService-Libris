@@ -68,11 +68,28 @@ This includes many contemporary as well as historical books.
 The catalogue is available online at L<http://libris.kb.se>, and can be
 queried with a public API.
 
-This module is a wrapper around this API, and uses the RDF responses to extract data from.
+This module is a wrapper around two of their APIs (xsearch and RDF responses).
 
 =head1 METHODS
 
 =head2 new
+
+    my $obj = WebService::Libris->new(
+        type => 'author',
+        id   => '246603',
+    );
+
+Creates an object of the C<WebService::Libris> class or a subclass thereof
+(denoted by C<type> in the argument list). C<type> can currently be one of
+(synonyms on one line)
+
+    auth author
+    bib book
+    library
+
+The C<id> argument is mandatory, and must contain the Libris ID of the object
+you want to retrieve. If you don't know the Libris ID, use one of the
+C<search> functions instead.
 
 =cut
 
@@ -98,7 +115,7 @@ sub new {
 
 =head2 rdf_url
 
-Returns the RDF resource URL for the current object.
+Returns the RDF resource URL for the current object. Mostly useful for internal purposes.
 
 =cut
 
@@ -111,7 +128,10 @@ sub rdf_url {
 =head2 dom
 
 Returns the L<Mojo::DOM> object from the web services response.
-Does a request to the web service if no DOM was stored previously
+Does a request to the web service if no DOM was stored previously.
+
+Only useful for you if you want to extract more data from a response
+than the object itself provides.
 
 =cut
 
@@ -122,6 +142,26 @@ sub dom {
     $self->_dom(Mojo::UserAgent->new()->get($self->rdf_url)->res->dom) unless $self->_dom;
     $self->_dom;
 }
+
+
+=head2 direct_search
+
+    my $hashref = WebService::Libris->direct_search(
+        term    => 'Your Searchterms Here',
+        page    => 1,   # page size is 200
+        full    => 1,   # return all available information
+    );
+
+Returns a hashref directly from the JSON response of the xsearch API
+described at L<http://librishelp.libris.kb.se/help/xsearch_eng.jsp?open=tech>.
+
+This is more efficient than a C<< WebService::Libris->search >> call, because
+it does only one query (whereas C<< ->search >> does one additional request
+per result object), but it's not as convenient, and does not allow browsing of
+related entities (such as authors and libraries).
+
+=cut
+
 
 sub direct_search {
     my ($self, %opts) = @_;
@@ -140,6 +180,23 @@ sub direct_search {
     $res->json;
 }
 
+=head2 search
+
+    my $collection = WebService::Libris->search(
+        term    => 'Your Search Term Here',
+        page    => 1,
+    );
+    while (my $book = $collection->next) {
+        say $book->title;
+    }
+
+Searches the xsearch API for arbitrary search terms, and returns a
+C<WebService::Libris::Collection> of books.
+
+See the C<direct_search> method above for a short discussion.
+
+=cut
+
 sub search {
     my ($self, %opts) = @_;
     my $json = $self->direct_search(%opts);
@@ -150,6 +207,14 @@ sub search {
         ids     => \@ids,
     );
 }
+
+=head2 search_for_isbn
+
+    my $book = WebService::ISBN->search_for_isbn('9170370192');
+
+Looks up a book by ISBN
+
+=cut
 
 sub search_for_isbn {
     my ($self, $isbn) = @_;
