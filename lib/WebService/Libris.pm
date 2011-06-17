@@ -128,6 +128,10 @@ See the C<direct_search> method above for a short discussion.
 
 Looks up a book by ISBN
 
+=head1 Less interesting methods
+
+The following methods aren't usually useful for the casual user, more
+for those who want to extend or subclass this module.
 
 =head2 rdf_url
 
@@ -141,23 +145,35 @@ Does a request to the web service if no DOM was stored previously.
 Only useful for you if you want to extract more data from a response
 than the object itself provides.
 
+=head2 id
+
+Returns the libris ID of the object. Only makes sense for subclasses.
+
+=head2 type
+
+Returns the short type name (C<bib>, C<auth>, C<library>). Only makes sense
+for subclasses.
+
+=head2 fragments
+
+Must be overridden in a subclass to return a list of
+the last two junks of the RDF resource URL, that is the short
+type name and the libris ID.
+
 =head1 AUTHOR
 
 Moritz Lenz, C<< <moritz at faui2k3.org> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-webservice-libris at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-Libris>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
+Please report any bugs or feature requests at
+L<https://github.com/moritz/WebService-Libris/issues>
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
     perldoc WebService::Libris
-
 
 You can also look for information at:
 
