@@ -65,7 +65,7 @@ returns a collection of related books
 
 =head2 held_by
 
-returns a collection of librarys that hold this book
+returns a collection of libraries that hold this book
 
 =head2 authors_obj
 
