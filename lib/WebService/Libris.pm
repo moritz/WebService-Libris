@@ -289,6 +289,7 @@ sub search_for_isbn {
     my $res = Mojo::UserAgent->new->max_redirects(1)
               ->get("http://libris.kb.se/hitlist?q=linkisxn:$isbn");
     my $url = $res->res->headers->location;
+    return unless $url;
     my ($type, $libris_id) = (split '/', $url)[-2, -1];
     $self->new(type => $type, id => $libris_id);
 }
