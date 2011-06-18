@@ -39,4 +39,45 @@ sub language {
     }
 }
 
+=head1 NAME
+
+WebService::Libris::Book - represents a Book in the libris.kb.se webservice
+
+=head1 SYNOPSIS
+
+    use WebService::Libris;
+    for my $b (WebService::Libris->search(term => 'Rothfuss')->all) {
+        # $b is a WebService::Libris::Book object here
+        say $b->title;
+        say $b->isbn;
+    }
+
+=head1 DESCRIPTION
+
+C<WebService::Libris::Book> is a subclass of C<WebService::Libris> and
+inherits all its methods.
+
+=head1 METHODS
+
+=head2 related_books
+
+returns a collection of related books
+
+=head2 held_by
+
+returns a collection of librarys that hold this book
+
+=head2 authors_obj
+
+returns a collection of L<WebService::Libris::Author> objects which are listed
+as I<creator> of this book.
+
+=head2 authors_text
+
+returns a list of creators of this book, as extracted from the response.
+This often contains duplicates, or slightly different versions of the
+same author name, so should be used with care.
+
+=cut
+
 1;
