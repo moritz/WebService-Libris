@@ -57,7 +57,21 @@ WebService::Libris::Book - represents a Book in the libris.kb.se webservice
 C<WebService::Libris::Book> is a subclass of C<WebService::Libris> and
 inherits all its methods.
 
+All of the following methods return undef or the empty list if the information is not available.
+
 =head1 METHODS
+
+=head2 title
+
+returns the title of the book
+
+=head2 date
+
+returns the publication date as a string (often just a year)
+
+=head2 isbn
+
+returns the ISBN
 
 =head2 related_books
 
