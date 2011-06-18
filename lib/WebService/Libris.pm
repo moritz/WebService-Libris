@@ -30,6 +30,9 @@ WebService::Libris - Access book meta data from libris.kb.se
 
 Version 0.01
 
+Note that this low version number actually reflects the immaturity of this
+module - no unit tests yet :(
+
 =cut
 
 our $VERSION = '0.01';
@@ -197,8 +200,14 @@ L<http://search.cpan.org/dist/WebService-Libris/>
 
 =back
 
+=head1 BUGS AND LIMITATIONS
+
+Nearly no error checking is done. So beware!
 
 =head1 ACKNOWLEDGEMENTS
+
+Thanks go to the Kungliga biblioteket (National Library of Sweden) for
+providing the libris.kb.se service and API.
 
 =head1 LICENSE AND COPYRIGHT
 
