@@ -24,7 +24,6 @@ sub first {
         type => $self->type,
         id   => $self->ids->[0],
     );
-
 }
 
 sub next {
@@ -37,6 +36,10 @@ sub next {
     } else {
         return;
     }
+}
+
+sub elems {
+    scalar @{ shift->ids }
 }
 
 1;
