@@ -11,7 +11,7 @@ sub fragments {
 sub _description {
     my $self = shift;
     my $url = join '/', $self->fragments;
-    $self->dom->at(qq{description[about\$="$url"]})
+    $self->dom->at(qq{description[about\$="$url"]}) // Mojo::DOM->new;
 }
 
 sub birthyear {
@@ -37,4 +37,4 @@ sub names {
     map $_->text, shift->_description->find('name')->each;
 }
 
-1;
+1; 
