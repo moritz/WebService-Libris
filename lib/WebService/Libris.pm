@@ -303,11 +303,13 @@ sub collection_from_dom {
     my $key;
     my @ids;
     my $idx = 1;
+    my %seen;
     $self->dom->find($search_for)->each(sub {
         my $d = shift;
         my $resource_url = $d->attrs->{'rdf:resource'};
         return unless $resource_url;
         my ($k, $id) = $self->fragment_from_resource_url($resource_url);
+        next if $seen{$id}++;
         if ($idx == 1) {
             $key = $k;
         } elsif ($k ne $k) {
