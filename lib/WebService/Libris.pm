@@ -28,14 +28,14 @@ WebService::Libris - Access book meta data from libris.kb.se
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 Note that this low version number actually reflects the immaturity of this
 module - no unit tests yet :(
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 =head1 SYNOPSIS

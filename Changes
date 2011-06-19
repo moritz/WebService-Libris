@@ -1,5 +1,8 @@
 Revision history for WebService-Libris
 
-0.01    Date/time
-        First version, released on an unsuspecting world.
+0.02    2011-06-19
+        Improved documentation
+        Accessors are a bit more robust
 
+0.01    2011-06-18
+        First version, released on an unsuspecting world.
