@@ -37,4 +37,8 @@ sub names {
     map $_->text, shift->_description->find('name')->each;
 }
 
+sub books {
+    shift->collection_from_dom('description[about^="http://libris.kb.se/resource/bib/"]');
+}
+
 1; 

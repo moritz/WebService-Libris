@@ -306,7 +306,8 @@ sub collection_from_dom {
     my %seen;
     $self->dom->find($search_for)->each(sub {
         my $d = shift;
-        my $resource_url = $d->attrs->{'rdf:resource'};
+        my $resource_url =  $d->attrs->{'rdf:resource'}
+                         // $d->attrs->{'rdf:about'};
         return unless $resource_url;
         my ($k, $id) = $self->fragment_from_resource_url($resource_url);
         next if $seen{$id}++;
