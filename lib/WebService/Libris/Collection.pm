@@ -5,6 +5,7 @@ require WebService::Libris;
 
 has 'type';
 has 'ids';
+has 'cache';
 
 sub new {
     my ($class, %attrs) = @_;
@@ -13,7 +14,7 @@ sub new {
 
 sub all {
     my $self = shift;
-    map WebService::Libris->new(type => $self->type, id => $_),
+    map WebService::Libris->new(type => $self->type, id => $_, cache => $self->cache),
         @{ $self->ids };
 }
 
@@ -21,8 +22,9 @@ sub first {
     my $self = shift;
     return unless @{ $self->ids };
     WebService::Libris->new(
-        type => $self->type,
-        id   => $self->ids->[0],
+        type    => $self->type,
+        id      => $self->ids->[0],
+        cache   => $self->cache,
     );
 }
 
@@ -30,8 +32,9 @@ sub next {
     my $self = shift;
     if (@{ $self->ids }) {
         return WebService::Libris->new(
-            type => $self->type,
-            id => shift @{ $self->ids },
+            type    => $self->type,
+            id      => shift @{ $self->ids },
+            cache   => $self->cache,
         )
     } else {
         return;

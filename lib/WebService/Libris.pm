@@ -19,6 +19,7 @@ my %default_typemap = (
 has 'id';
 has 'type';
 has '_dom';
+has 'cache';
 
 has 'type_map';
 
@@ -251,9 +252,26 @@ sub rdf_url {
 sub dom {
     my $self = shift;
 
-    # TODO: add caching options
-    $self->_dom(Mojo::UserAgent->new()->get($self->rdf_url)->res->dom) unless $self->_dom;
+    unless ($self->_dom) {
+        if ($self->cache) {
+            my $key  = join '/', $self->fragments;
+            if (my $r = $self->cache->get($key)) {
+                $self->_dom($r);
+            } else {
+               my $dom = $self->_request_dom;
+               $self->cache->set($key, $dom);
+               $self->_dom($dom);
+            }
+        } else {
+            $self->_dom($self->_request_dom);
+        }
+    }
     $self->_dom;
+}
+
+sub _request_dom {
+    my $self = shift;
+    Mojo::UserAgent->new()->get($self->rdf_url)->res->dom;
 }
 
 sub direct_search {
@@ -281,6 +299,7 @@ sub search {
     WebService::Libris::Collection->new(
         type    => 'bib',
         ids     => \@ids,
+        cache   => $self->cache,
     );
 }
 
@@ -291,7 +310,7 @@ sub search_for_isbn {
     my $url = $res->res->headers->location;
     return unless $url;
     my ($type, $libris_id) = (split '/', $url)[-2, -1];
-    $self->new(type => $type, id => $libris_id);
+    $self->new(type => $type, id => $libris_id, cache => $self->cache);
 }
 
 sub fragments {
@@ -322,6 +341,7 @@ sub collection_from_dom {
     WebService::Libris::Collection->new(
         type    => $key,
         ids     => \@ids,
+        cache   => $self->cache,
     );
 }
 
