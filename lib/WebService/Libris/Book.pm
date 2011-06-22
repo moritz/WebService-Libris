@@ -40,16 +40,23 @@ sub authors_ids {
     return @ids;
 }
 
-sub language {
+sub language_marc {
     my $self = shift;
     my $l = $self->dom->at('language');
     return unless $l;
     $l = $l->attrs->{'rdf:resource'};
     if ($l =~ m{http://purl.org/NET/marccodes/languages/(\w{3})(?:\#lang)?}) {
-        return marc_lang_code_to_iso($1);
+        return "$1";
     } else {
-        return;
+        return undef;
     }
+}
+
+sub language {
+    my $self = shift;
+    my $marc_lang = $self->language_marc;
+    return undeff unless defined $marc_lang;
+    return marc_lang_code_to_iso($marc_lang);
 }
 
 =head1 NAME
@@ -104,6 +111,19 @@ as I<creator> of this book.
 returns a list of creators of this book, as extracted from the response.
 This often contains duplicates, or slightly different versions of the
 same author name, so should be used with care.
+
+=head2 language
+
+Some of the book records include a "MARC" language code (same as the
+Library of Congress uses). This methods tries to extract this code, and returns
+the equivalent ISO 639 language code (two letters) if the translation is known,
+and the marc code otherwise, or undef if no language code was found in the
+record.
+
+=head2 language_marc
+
+Returns the language in the three-letter "MARC" code, or undef if no such
+code is found.
 
 =cut
 
