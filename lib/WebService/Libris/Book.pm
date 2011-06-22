@@ -55,7 +55,7 @@ sub language_marc {
 sub language {
     my $self = shift;
     my $marc_lang = $self->language_marc;
-    return undeff unless defined $marc_lang;
+    return undef unless defined $marc_lang;
     return marc_lang_code_to_iso($marc_lang);
 }
 
