@@ -19,8 +19,7 @@ sub _filename {
 sub get {
     my ($self, $key) = @_;
     my $filename = $self->_filename($key);
-    open my $h, '<', $filename;
-    return unless $h;
+    return unless open my $h, '<', $filename;
     Mojo::DOM->new(xml => 1, charset => 'UTF-8')->parse(do { local $/; <$h> });
 }
 
