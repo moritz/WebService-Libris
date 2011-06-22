@@ -14,6 +14,7 @@ sub fragments {
 sub related_books { shift->collection_from_dom('frbr_related') }
 sub held_by       { shift->collection_from_dom('held_by')      }
 sub authors_obj   { shift->collection_from_dom('creator')      }
+
 sub authors_text  {
     my $self = shift;
     my @authors = grep length, map $_->text, $self->dom->find('creator')->each;
@@ -25,6 +26,18 @@ sub authors_text  {
     } else {
         return join ", ", @authors;
     }
+}
+
+sub authors_ids {
+    my $self = shift;
+    my %seen;
+    my @ids = sort
+              grep { !$seen{$_}++ }
+              map { (split '/', $_)[-1] }
+              grep $_,
+              map { $_->attrs->{'rdf:resource'} }
+              $self->dom->find('creator')->each;
+    return @ids;
 }
 
 sub language {
