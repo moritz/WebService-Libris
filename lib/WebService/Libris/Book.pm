@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use 5.010;
 
-__PACKAGE__->_make_text_accessor(qw/title date/, ['isbn', 'isbn10']);
+__PACKAGE__->_make_text_accessor(qw/title date publisher/, ['isbn', 'isbn10']);
 
 sub fragments {
     'bib', shift->id;
@@ -42,14 +42,16 @@ sub authors_ids {
 
 sub language_marc {
     my $self = shift;
-    my $l = $self->dom->at('language');
-    return unless $l;
-    $l = $l->attrs->{'rdf:resource'};
-    if ($l =~ m{http://purl.org/NET/marccodes/languages/(\w{3})(?:\#lang)?}) {
-        return "$1";
-    } else {
-        return undef;
-    }
+
+    my @l = $self->dom->find('language')->each;
+    @l = grep $_, map $_->attrs->{'rdf:resource'}, @l;
+    return undef unless @l;
+
+    @l = map { m{http://purl.org/NET/marccodes/languages/(\w{3})(?:\#lang)?} && "$1" } @l;
+    # somehow the last language code seems to be more reliable than the first
+    # one - no idea why
+    return $l[-1] if @l;
+    undef;
 }
 
 sub language {
@@ -92,6 +94,10 @@ returns the publication date as a string (often just a year)
 =head2 isbn
 
 returns the ISBN
+
+=head2 publisher
+
+returns the name of the publisher
 
 =head2 related_books
 
