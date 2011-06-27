@@ -28,6 +28,11 @@ sub authors_text  {
     }
 }
 
+sub isbns {
+    my $self = shift;
+    map $_->text, $self->dom->find('isbn10')->each;
+}
+
 sub authors_ids {
     my $self = shift;
     my %seen;
@@ -93,7 +98,11 @@ returns the publication date as a string (often just a year)
 
 =head2 isbn
 
-returns the ISBN
+returns the first ISBN
+
+=head2 isbn
+
+returns a list of all ISBNs associated with the current book
 
 =head2 publisher
 
