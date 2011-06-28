@@ -34,7 +34,7 @@ Note that the API is still subject to change.
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 =head1 SYNOPSIS
