@@ -5,6 +5,7 @@ Revision history for WebService-Libris
         More accessors
         Caching
         Unit tests
+        Got rid of WebService::Libris::Collection
 
 0.02    2011-06-19
         Improved documentation
