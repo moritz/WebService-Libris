@@ -115,11 +115,11 @@ related entities (such as authors and libraries).
 
 =head2 search
 
-    my $collection = WebService::Libris->search(
+    my @books = WebService::Libris->search(
         term    => 'Your Search Term Here',
         page    => 1,
     );
-    while (my $book = $collection->next) {
+    for my $book (@books) {
         say $book->title;
     }
 
@@ -325,11 +325,10 @@ sub fragments {
     die "Must be overridden in subclasses";
 }
 
-sub collection_from_dom {
+sub list_from_dom {
     my ($self, $search_for) = @_;
     my $key;
-    my @ids;
-    my $idx = 1;
+    my @result;
     my %seen;
     $self->dom->find($search_for)->each(sub {
         my $d = shift;
@@ -337,20 +336,14 @@ sub collection_from_dom {
                          // $d->attrs->{'rdf:about'};
         return unless $resource_url;
         my ($k, $id) = $self->fragment_from_resource_url($resource_url);
-        next if $seen{$id}++;
-        if ($idx == 1) {
-            $key = $k;
-        } elsif ($k ne $k) {
-            die "Resource links differ in type ($key vs. $k), can't handle that yet";
-        }
-        push @ids, $id;
-        $idx++;
+        return if $seen{"$k/$id"}++;
+        push @result, __PACKAGE__->new(
+            type    => $k,
+            id      => $id,
+            cache   => $self->cache,
+        );
     });
-    WebService::Libris::Collection->new(
-        type    => $key,
-        ids     => \@ids,
-        cache   => $self->cache,
-    );
+    @result;
 }
 
 sub fragment_from_resource_url {

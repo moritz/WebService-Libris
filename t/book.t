@@ -1,5 +1,5 @@
 use 5.010;
-use Test::More tests => 6;
+use Test::More tests => 12;
 use lib 'blib', 'lib';
 use WebService::Libris;
 use utf8;
@@ -20,3 +20,12 @@ is join(', ', $book->authors_text),
     'Authors (text)';
 
 is join(',', $book->authors_ids), '246603', 'author ids';
+my @authors = $book->authors_obj;
+is scalar(@authors), 1, 'got the right number of author objects';
+my $author = $authors[0];
+is $author->id, ($book->authors_ids)[0], 'consistency of author IDs';
+
+is $author->libris_key, 'Ajvide Lindqvist, John, 1968-', 'author: libris key';
+is join(', ', $author->names), 'Ajvide Lindkvist, Jun, 1968-, John Ajvide Lindqvist, Jon Ajvide Lindkvist, Lindqvist, John Ajvide, 1968-, Lindkvist, Jon Ajvide, 1968-, Ajvide Lindqvist, John, 1968-, Jun Ajvide Lindkvist', 'all name variants';
+is $author->birthyear, '1968', 'birth year';
+is $author->same_as, 'http://viaf.org/viaf/72579864/#foaf:Person', 'same_as URL';

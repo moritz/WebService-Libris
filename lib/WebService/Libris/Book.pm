@@ -11,9 +11,9 @@ sub fragments {
     'bib', shift->id;
 }
 
-sub related_books { shift->collection_from_dom('frbr_related') }
-sub held_by       { shift->collection_from_dom('held_by')      }
-sub authors_obj   { shift->collection_from_dom('creator')      }
+sub related_books { shift->list_from_dom('frbr_related') }
+sub held_by       { shift->list_from_dom('held_by')      }
+sub authors_obj   { shift->list_from_dom('creator')      }
 
 sub authors_text  {
     my $self = shift;
@@ -73,7 +73,7 @@ WebService::Libris::Book - represents a Book in the libris.kb.se webservice
 =head1 SYNOPSIS
 
     use WebService::Libris;
-    for my $b (WebService::Libris->search(term => 'Rothfuss')->all) {
+    for my $b (WebService::Libris->search(term => 'Rothfuss')) {
         # $b is a WebService::Libris::Book object here
         say $b->title;
         say $b->isbn;
@@ -110,15 +110,15 @@ returns the name of the publisher
 
 =head2 related_books
 
-returns a collection of related books
+returns a list of related books
 
 =head2 held_by
 
-returns a collection of libraries that hold this book
+returns a list of libraries that hold this book
 
 =head2 authors_obj
 
-returns a collection of L<WebService::Libris::Author> objects which are listed
+returns a list of L<WebService::Libris::Author> objects which are listed
 as I<creator> of this book.
 
 =head2 authors_text

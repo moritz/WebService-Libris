@@ -38,7 +38,7 @@ sub names {
 }
 
 sub books {
-    shift->collection_from_dom('description[about^="http://libris.kb.se/resource/bib/"]');
+    shift->list_from_dom('description[about^="http://libris.kb.se/resource/bib/"]');
 }
 
 =head1 NAME
@@ -90,7 +90,7 @@ point to viaf.org or dbpedia.org
 
 =head2 books
 
-Returns a collection of books written by this author.
+Returns a list of books written by this author.
 
 =cut
 

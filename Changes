@@ -1,9 +1,10 @@
 Revision history for WebService-Libris
 
 0.03    
-        Documentation for ::Author class
-        Accessor for books that an author wrote
+        Documentation for all interesting classes
+        More accessors
         Caching
+        Unit tests
 
 0.02    2011-06-19
         Improved documentation
