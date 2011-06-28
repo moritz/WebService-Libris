@@ -128,7 +128,7 @@ See the C<direct_search> method above for a short discussion.
 
 =head2 search_for_isbn
 
-    my $book = WebService::ISBN->search_for_isbn('9170370192');
+    my $book = WebService::Libris->search_for_isbn('9170370192');
 
 Looks up a book by ISBN
 
