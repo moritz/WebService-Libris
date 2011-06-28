@@ -1,5 +1,5 @@
 use 5.010;
-use Test::More tests => 12;
+use Test::More tests => 17;
 use lib 'blib', 'lib';
 use WebService::Libris;
 use utf8;
@@ -29,3 +29,10 @@ is $author->libris_key, 'Ajvide Lindqvist, John, 1968-', 'author: libris key';
 is join(', ', $author->names), 'Ajvide Lindkvist, Jun, 1968-, John Ajvide Lindqvist, Jon Ajvide Lindkvist, Lindqvist, John Ajvide, 1968-, Lindkvist, Jon Ajvide, 1968-, Ajvide Lindqvist, John, 1968-, Jun Ajvide Lindkvist', 'all name variants';
 is $author->birthyear, '1968', 'birth year';
 is $author->same_as, 'http://viaf.org/viaf/72579864/#foaf:Person', 'same_as URL';
+my @libs = $book->held_by;
+is scalar(@libs), 13, 'correct number of libraries that hold our book';
+is $libs[1]->name, 'Umeå universitetsbibliotek', 'library name';
+is $libs[1]->lat, '63.823181', 'lattitude';
+is $libs[1]->long, '20.305824', 'longitude';
+is $libs[1]->homepage, 'http://www.ub.umu.se', 'homepage';
+
