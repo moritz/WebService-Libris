@@ -28,13 +28,13 @@ WebService::Libris - Access book meta data from libris.kb.se
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 Note that the API is still subject to change.
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 =head1 SYNOPSIS

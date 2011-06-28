@@ -1,5 +1,9 @@
 Revision history for WebService-Libris
 
+0.05    2011-06-28
+        Add missing FileCache.pm
+        more elaborate language handling
+        remove nonsensical -T from test shebang lines
 0.03    2011-06-28
         Documentation for all interesting classes
         More accessors
