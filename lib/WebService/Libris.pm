@@ -2,7 +2,6 @@ package WebService::Libris;
 use Mojo::Base -base;
 use Mojo::UserAgent;
 use Mojo::URL;
-use WebService::Libris::Collection;
 
 use 5.010;
 use strict;
@@ -29,10 +28,9 @@ WebService::Libris - Access book meta data from libris.kb.se
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
-Note that this low version number actually reflects the immaturity of this
-module - no unit tests yet :(
+Note that the API is still subject to change.
 
 =cut
 
