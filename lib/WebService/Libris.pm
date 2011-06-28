@@ -49,6 +49,8 @@ our $VERSION = '0.02';
         type => 'book',
         # Libris ID
         id   => '9604288',
+        # optional but recommended:
+        cache_dir = '/tmp/webservice-libris/',
     );
     print $book->title;
 
@@ -232,6 +234,12 @@ sub new {
         } else {
             $c = $default_typemap{lc $opts{type}};
         }
+    }
+    if (my $cache_dir = delete $opts{cache_dir}) {
+        require WebService::Libris::FileCache;
+        $opts{cache} = WebService::Libris::FileCache->new(
+            directory => $cache_dir,
+        );
     }
     if ($c) {
         $class = __PACKAGE__ . "::" . $c;

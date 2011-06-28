@@ -7,7 +7,18 @@ has 'directory';
 
 sub new {
     my $class = shift;
-    bless {@_}, $class;
+    my $self = bless {@_}, $class;
+    $self->_init;
+    $self
+}
+
+sub _init {
+    my $self = shift;
+    my $d = $self->directory;
+    unless (-d $d) {
+        require File::Path;
+        File::Path::make_path($d)
+    }
 }
 
 sub _filename {
