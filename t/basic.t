@@ -1,5 +1,5 @@
 use 5.010;
-use Test::More tests => 17;
+use Test::More tests => 18;
 use lib 'blib', 'lib';
 use WebService::Libris;
 use utf8;
@@ -18,6 +18,7 @@ is $book->isbn, '9170370192', 'ISBN';
 is join(', ', $book->authors_text),
     'Ajvide Lindqvist, John, 1968-, John Ajvide Lindqvist',
     'Authors (text)';
+is $book->language, 'sv', 'language';
 
 is join(',', $book->authors_ids), '246603', 'author ids';
 my @authors = $book->authors_obj;

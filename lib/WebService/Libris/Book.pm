@@ -45,25 +45,43 @@ sub authors_ids {
     return @ids;
 }
 
-sub language_marc {
+sub languages_marc {
     my $self = shift;
 
     my @l = $self->dom->find('language')->each;
     @l = grep $_, map $_->attrs->{'rdf:resource'}, @l;
     return undef unless @l;
 
-    @l = map { m{http://purl.org/NET/marccodes/languages/(\w{3})(?:\#lang)?} && "$1" } @l;
-    # somehow the last language code seems to be more reliable than the first
-    # one - no idea why
-    return $l[-1] if @l;
-    undef;
+    map { m{http://purl.org/NET/marccodes/languages/(\w{3})(?:\#lang)?} && "$1" } @l;
+}
+
+sub language_marc {
+    (shift->languages_marc)[-1] // ()
+}
+
+sub languages {
+    my $self = shift;
+    my @langs = map marc_lang_code_to_iso($_), $self->languages_marc;
+    for ($self->dom->find('*[lang]')->each) {
+        my $l = $_->attrs->{'xml:lang'};
+        push @langs, $l if defined $l;
+    }
+    @langs;
 }
 
 sub language {
     my $self = shift;
-    my $marc_lang = $self->language_marc;
-    return undef unless defined $marc_lang;
-    return marc_lang_code_to_iso($marc_lang);
+    my @langs = $self->languages;
+
+    return undef unless @langs;
+    my %c;
+    ++$c{$_} for @langs;
+    # just one language
+    return $langs[0] if keys(%c) == 1;
+
+    @langs = reverse sort { $c{$a} <=> $c{$b} } @langs;
+    return $langs[0] if $c{$langs[0]} - $c{$langs[1]} >= 2;
+    return undef;
 }
 
 =head1 NAME
@@ -127,18 +145,26 @@ returns a list of creators of this book, as extracted from the response.
 This often contains duplicates, or slightly different versions of the
 same author name, so should be used with care.
 
-=head2 language
-
-Some of the book records include a "MARC" language code (same as the
-Library of Congress uses). This methods tries to extract this code, and returns
-the equivalent ISO 639 language code (two letters) if the translation is known,
-and the marc code otherwise, or undef if no language code was found in the
-record.
-
 =head2 language_marc
 
 Returns the language in the three-letter "MARC" code, or undef if no such
 code is found.
+
+=head2 language
+
+Some of the book records include a "MARC" language code (same as the
+Library of Congress uses).  This methods tries to extract this code, and returns
+the equivalent ISO 639 language code (two letters) if the translation is known.
+
+It also exracts C<xml:lang> attribute from any tags found in the record.
+
+Sometimes there are several different language specifications in a single
+record.  In this case this method does an educated guess which one is correct.
+
+=head2 languages
+
+Return all language codes mentioned in the description of the C<language> method. No deduplication is done.
+
 
 =cut
 
