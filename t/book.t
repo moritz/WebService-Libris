@@ -14,7 +14,9 @@ ok my $book = WebService::Libris->new(
 
 is $book->title, 'Låt den rätte komma in : [skräckroman]', 'title';
 is $book->language, 'sv', 'language';
-is $book->isbn, '9170370192', 'ISBN";
+is $book->isbn, '9170370192', 'ISBN';
 is join(', ', $book->authors_text),
     'Ajvide Lindqvist, John, 1968-, John Ajvide Lindqvist',
     'Authors (text)';
+
+is join(',', $book->authors_ids), '246603', 'author ids';
