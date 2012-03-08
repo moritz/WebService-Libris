@@ -33,7 +33,7 @@ sub get {
     return undef unless open my $h, '<', $filename;
     my $contents = do { local $/; <$h> };
     return undef unless length $contents;
-    Mojo::DOM->new(xml => 1, charset => 'UTF-8')->parse($contents);
+    Mojo::DOM->new->xml(1)->charset('UTF-8')->parse($contents);
 }
 
 sub set {
