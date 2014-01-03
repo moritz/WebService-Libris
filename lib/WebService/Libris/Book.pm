@@ -40,7 +40,7 @@ sub authors_ids {
               grep { !$seen{$_}++ }
               map { (split '/', $_)[-1] }
               grep $_,
-              map { $_->attrs->{'rdf:resource'} }
+              map { $_->attr('rdf:resource') }
               $self->dom->find('creator')->each;
     return @ids;
 }
@@ -49,7 +49,7 @@ sub languages_marc {
     my $self = shift;
 
     my @l = $self->dom->find('language')->each;
-    @l = grep $_, map $_->attrs->{'rdf:resource'}, @l;
+    @l = grep $_, map $_->attr('rdf:resource'), @l;
     return undef unless @l;
 
     map { m{http://purl.org/NET/marccodes/languages/(\w{3})(?:\#lang)?} && "$1" } @l;
@@ -63,7 +63,7 @@ sub languages {
     my $self = shift;
     my @langs = map marc_lang_code_to_iso($_), $self->languages_marc;
     for ($self->dom->find('*[lang]')->each) {
-        my $l = $_->attrs->{'xml:lang'};
+        my $l = $_->attr('xml:lang');
         push @langs, $l if defined $l;
     }
     @langs;

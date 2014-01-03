@@ -13,7 +13,7 @@ my $build = Module::Build->new(
     dist_version_from  => 'lib/WebService/Libris.pm',
     requires => {
         perl        => '5.010',
-        Mojolicious => '0.040',
+        Mojolicious => '4.063',
     },
     recommends         => {},
     sign               => 0,

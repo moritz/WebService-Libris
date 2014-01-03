@@ -28,7 +28,7 @@ sub same_as {
     my $self = shift;
     my $sd = $self->_description->at('sameas');
     if ($sd) {
-        return $sd->attrs->{'rdf:resource'};
+        return $sd->attr('rdf:resource');
     }
     return;
 }

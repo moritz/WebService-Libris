@@ -28,13 +28,13 @@ WebService::Libris - Access book meta data from libris.kb.se
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 Note that the API is still subject to change.
 
 =cut
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 
 =head1 SYNOPSIS
@@ -330,8 +330,8 @@ sub list_from_dom {
     my %seen;
     $self->dom->find($search_for)->each(sub {
         my $d = shift;
-        my $resource_url =  $d->attrs->{'rdf:resource'}
-                         // $d->attrs->{'rdf:about'};
+        my $resource_url =  $d->attr('rdf:resource')
+                         // $d->attr('rdf:about');
         return unless $resource_url;
         my ($k, $id) = $self->fragment_from_resource_url($resource_url);
         return if $seen{"$k/$id"}++;

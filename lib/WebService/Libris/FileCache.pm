@@ -30,10 +30,10 @@ sub _filename {
 sub get {
     my ($self, $key) = @_;
     my $filename = $self->_filename($key);
-    return undef unless open my $h, '<', $filename;
+    return undef unless open my $h, '<:encoding(UTF-8)', $filename;
     my $contents = do { local $/; <$h> };
     return undef unless length $contents;
-    Mojo::DOM->new->xml(1)->charset('UTF-8')->parse($contents);
+    Mojo::DOM->new->xml(1)->parse($contents);
 }
 
 sub set {
